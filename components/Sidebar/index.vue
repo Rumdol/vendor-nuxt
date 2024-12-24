@@ -22,30 +22,16 @@
             </router-link>
           </li>
           <li>
-            <router-link to="/Sales" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
-              <i class="fa-solid fa-file-invoice mr-2 h-4 w-4 "></i> Sales
+            <router-link to="/Promotions" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
+              <i class="fa-solid fa-file-invoice mr-2 h-4 w-4 "></i> Promotions
             </router-link>
           </li>
           <li>
-            <router-link to="/UserManagement" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
-              <i class="fa-solid fa-users mr-2 h-4 w-4"></i> User Management
+            <router-link to="/Order" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
+              <i class="fa-solid fa-cart-shopping mr-2 h-4 w-4"></i> Orders
             </router-link>
           </li>
-          <li>
-            <router-link to="/Reporting" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
-              <i class="fa-solid fa-scroll mr-2 h-4 w-4"></i> Reporting
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/Category" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
-              <i class="fa-solid fa-layer-group mr-2 h-4 w-4"></i> Category
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/Vendor" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
-              <i class="fa-solid fa-store mr-2 h-4 w-4"></i> Vendor
-            </router-link>
-          </li>
+
           <li class="setting">
             <router-link to="/Setting" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100 ">
               <i class="fa-solid fa-wrench mr-2 h-4 w-4"></i> Setting
