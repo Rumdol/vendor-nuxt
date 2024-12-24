@@ -5,9 +5,7 @@
         <li>
           <TotalUser :total="dashboardStore.dashboard.total_users"/>
         </li>
-        <li>
-          <TotalVendors :total="dashboardStore.dashboard.total_vendors"/>
-        </li>
+        
         <li>
           <TotalProducts :total="dashboardStore.dashboard.total_products"/>
         </li>
