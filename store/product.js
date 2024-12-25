@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import ProductService from '~/services/ProductService.js'
 
 export const useProductStore = defineStore('product', () => {
-  const product = ref({})
+  const product = ref([])
   const productService = ProductService.getInstance()
 
   const getProduct = async (params) => {
@@ -16,13 +16,21 @@ export const useProductStore = defineStore('product', () => {
       throw new Error(`Get product failed: ${error.message || 'Unknown error'}`)
     }
   }
+  const createProduct = async (params) => {
+    try{
+      const { data } = await productService.createProduct(params)
+      ElMessage.success(`Product created successfully!`)
+      return data;
+    }catch(error){
+      ElMessage.error(error.message || 'Failed to create product')
+      throw new Error(`Create product failed: ${error.message || 'Unknown error'}`)
+    }
+  }
 
-  const showProduct = async (id) => {
+  const showProduct = async (params) => {
     try {
-      const { data } = await productService.showProduct(id)
-      const products = data || {}
-      product.value = products
-      return products
+      const response = await productService.showProduct(params);
+      return response.data;
     } catch (error) {
       ElMessage.error(error.message || 'Failed to fetch product')
       throw new Error(
@@ -31,9 +39,34 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  const updateProduct = async (id, data) => {
+    try{
+      const response = await productService.updateProduct(id, data)
+      product.value = response.data;
+      return response.data
+    }catch(error){
+      ElMessage.error(error.message || 'Failed to update product')
+      throw new Error(`Update product failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
+  const deleteProduct = async (params) => {
+    try {
+
+      const deletedProduct = await productService.deleteProduct(params)
+      ElMessage.success('Product deleted successfully')
+
+      return deletedProduct  // Return the deleted category data
+    } catch (error) {
+      throw new Error('Failed to delete product in store: ' + error.message)
+    }
+  }
   return {
     product: computed(() => product.value),
     getProduct,
     showProduct,
+    createProduct,
+    deleteProduct,
+    updateProduct
   }
 })
