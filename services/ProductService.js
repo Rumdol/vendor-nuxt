@@ -15,24 +15,26 @@ class ProductService extends BaseService {
 
   async getProduct(payload = {}) {
 
-    // Filter out null or undefined parameters
-    const filteredParams = Object.fromEntries(
-      Object.entries(payload).filter(([_, value]) => value != null),
-    )
 
     // Convert the filtered parameters to a query string
-    const queryParams = new URLSearchParams(filteredParams).toString()
+    const queryParams = new URLSearchParams(payload).toString()
 
     // Make the API call with the query parameters
-    return await this._get(`${this._prefix}/all?${queryParams}`, {})
+    return await this._get(`${this._prefix}?${queryParams}`, {})
   }
-  async getwishlist() {
-    return await this._get(`${this._prefix}/wishlist`)
+  async createProduct(payload = {}) {
+    return await this._post(`${this._prefix}/create`, payload)
   }
+
   async showProduct(id) {
     return await this._get(`${this._prefix}/${id}`);
   }
-
+  async updateProduct(id, payload={}) {
+    return await this._post(`${this._prefix}/update/${id}`, payload);
+  }
+  async deleteProduct(id) {
+    return await this._delete(`${this._prefix}/${id}`);
+  }
 }
 
 export default ProductService
