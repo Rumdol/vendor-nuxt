@@ -11,9 +11,9 @@ export const useCategoryStore = defineStore('category', () => {
     try {
       const { data } = await categoryService.getCategory(params)
       const categories = data || {};
-      const total = data?.total || 0;
       category.value = categories
-      return {categories, total}
+      console.log('category:',categories)
+      return categories
     } catch (error) {
       ElMessage.error(error.message || 'Get category failed')
       throw new Error(`Get category failed: ${error.message || 'Unknown error'}`)
