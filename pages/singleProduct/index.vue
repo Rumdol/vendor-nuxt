@@ -7,7 +7,7 @@ const products = ref([]);
 const totalItems = ref(0);
 const currentPage = ref(1);
 const searchTerm = ref('');
-const itemsPage = ref(10);
+const itemsPage = ref(5);
 const productStore = useProductStore();
 const { getProduct, deleteProduct } = productStore;
 
@@ -107,7 +107,7 @@ onMounted(fetchProduct);
         </template>
       </el-table-column>
       <el-table-column prop="title" label="Brand Name" width="300" />
-      <el-table-column prop="fragrance_family" label="Category" width="300" />
+      <el-table-column prop="category_id" label="Category" width="300" />
       <el-table-column prop="price" label="Price" width="200" />
       <el-table-column prop="created_at" label="Date" width="200" />
       <el-table-column prop="status" label="status" width="100" />

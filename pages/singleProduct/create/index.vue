@@ -1,4 +1,6 @@
 <template>
+
+  {{categoryData}}
   <el-form :model="form"
            ref="formRef"
            :rules="rules"
@@ -26,11 +28,15 @@
       <el-input v-model="form.title" @input="form.slug = Slug(form.title)" />
       <p>Slug: {{ form.slug }}</p>
     </el-form-item>
-    <el-form-item label="Category" prop="fragrance">
-      <el-select v-model="form.fragrance_family" placeholder="please select category for your product">
-        <el-option label="fruit" value="fruit" />
-        <el-option label="wood" value="wood" />
-      </el-select>
+    <el-form-item label="Category" prop="category">
+      <el-select-v2
+        v-model="form.category"
+        :options="categoryData"
+        :props="props"
+        placeholder="Please select categories"
+        style="width: 240px"
+        filterable
+      />
     </el-form-item>
     <el-form-item label="Gender" prop="gender">
       <el-select v-model="form.gender" placeholder="please select your product gender">
@@ -49,7 +55,9 @@
     <el-form-item label="Description" prop="description">
       <el-input v-model="form.description" type="textarea" />
     </el-form-item>
-
+    <el-form-item label="In stock" prop="status">
+      <el-switch v-model="form.status" />
+    </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="onSubmit">Create</el-button>
       <el-button @click="navigateTo('/singleProduct')">Cancel</el-button>
@@ -60,6 +68,7 @@
 <script setup>
 import { ref} from 'vue'
 import { useProductStore} from '~/store/product.js'
+import { useCategoryStore } from '~/store/category.js'
 
 const form = reactive({
   image: null,
@@ -70,7 +79,9 @@ const form = reactive({
   gender: '',
   price: '',
   volume: '',
-  description: ''
+  description: '',
+  category: '',
+  status: 0,
 });
 
 const rules = {
@@ -105,6 +116,39 @@ const rules = {
     ]
   };
 
+const categoryStore = useCategoryStore()
+const {getCategory } = categoryStore;
+const categoryData = ref([])
+const currentPage = ref(1)
+
+const props = {
+  label: 'name', // Field to display in dropdown
+  value: 'id',   // Field used for binding selected values
+}
+const selectedCategories = ref([])
+//Get category to show on the table
+const fetchCategories = async () => {
+  try {
+    const response = await getCategory({
+      page: currentPage.value,
+    })
+
+    console.log('response',response);
+
+    const categoriesData = response.data?.map((item) => ({
+      id: item.id,
+      name: item.name,
+    })) || [];
+
+    categoryData.value = categoriesData;
+    console.log('Categories (id and name only):', categoryData.value);
+  } catch (error) {
+    console.log('Failed to fetch categories', error)
+    ElMessage('Failed the fetch category', error)
+  }
+}
+
+console.log('fetchCategory', fetchCategories());
 const productStore = useProductStore()
 const { createProduct } = productStore
 
@@ -134,10 +178,10 @@ const createNewProduct = async () => {
     formData.append('volume', form.volume);
     formData.append('description', form.description);
     formData.append('gender', form.gender);
-    formData.append('fragrance_family', form.fragrance_family);
+    formData.append('category_id', form.category);
+    formData.append('status', form.status ? 1 : 0);
 
     const { data } = await createProduct(formData);
-    console.log('Product created', data);
     navigateTo('/singleProduct')
   }catch(error){
     console.error('Product creation failed', error);

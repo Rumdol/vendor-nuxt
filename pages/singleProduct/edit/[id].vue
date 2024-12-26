@@ -30,14 +30,15 @@
       <el-input v-model="form.title" @input="form.slug = Slug(form.title)" />
       <p>Slug: {{ form.slug }}</p>
     </el-form-item>
-    <el-form-item label="Category" prop="fragrance">
-      <el-select
-        v-model="form.fragrance_family"
-        placeholder="please select category for your product"
-      >
-        <el-option label="fruit" value="fruit" />
-        <el-option label="wood" value="wood" />
-      </el-select>
+    <el-form-item label="Category" prop="category">
+      <el-select-v2
+        v-model="form.category_id"
+        :options="categoryData"
+        :props="props"
+        placeholder="Please select categories"
+        style="width: 240px"
+        filterable
+      />
     </el-form-item>
     <el-form-item label="Gender" prop="gender">
       <el-select
@@ -58,7 +59,7 @@
     <el-form-item label="Description" prop="description">
       <el-input v-model="form.description" type="textarea" />
     </el-form-item>
-    <el-form-item label="out of stock" prop="status">
+    <el-form-item label="In stock" prop="status">
       <el-switch v-model="form.status" />
     </el-form-item>
 
@@ -72,12 +73,12 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProductStore } from '~/store/product.js'
+import { useCategoryStore } from '~/store/category.js'
 
 definePageMeta({
   middleware: ['authenticated'],
 })
 const route = useRoute()
-
 const form = reactive({
   image: null,
   product_code: '',
@@ -88,8 +89,41 @@ const form = reactive({
   price: '',
   volume: '',
   description: '',
-  status: '',
-})
+  category_id: '',
+  status: 0,
+});
+const categoryStore = useCategoryStore()
+const {getCategory } = categoryStore;
+const categoryData = ref([])
+const searchTerm = ref('')
+const currentPage = ref(1);
+
+const props = {
+  label: 'name', // Field to display in dropdown
+  value: 'id',   // Field used for binding selected values
+}
+
+const fetchCategories = async () => {
+  try {
+    const response = await getCategory({
+      page: currentPage.value,
+      search: searchTerm.value,
+    })
+
+    console.log('response',response);
+
+    const categoriesData = response.data?.map((item) => ({
+      id: item.id,
+      name: item.name,
+    })) || [];
+
+    categoryData.value = categoriesData;
+    console.log('Categories (id and name only):', categoryData.value);
+  } catch (error) {
+    console.log('Failed to fetch categories', error)
+    ElMessage('Failed the fetch category', error)
+  }
+}
 
 const productStore = useProductStore()
 const { showProduct, updateProduct } = productStore
@@ -119,6 +153,11 @@ const loadProduct = async () => {
     } else {
       form.image = null
     }
+    // Get the category name based on category_id
+    const selectedCategory = categoryData.value.find(
+      (category) => category.id === productData.value.category_id
+    )
+    form.category_id = selectedCategory ? selectedCategory.id : null
     form.product_code = productData.value.product_code || ''
     form.title = productData.value.title || ''
     form.description = productData.value.description || ''
@@ -127,6 +166,7 @@ const loadProduct = async () => {
     form.price = productData.value.price || ''
     form.volume = productData.value.volume || ''
     form.gender = productData.value.gender || ''
+    form.category_id = productData.value.category_id || ''
     console.log(form)
   } catch (error) {
     console.log('Failed to load product: ' + error)
@@ -152,8 +192,12 @@ const onSubmit = async () => {
     const formData = new FormData();
 
    // Include the existing image if a new one is not uploaded
-    if (form.image) {
-      formData.append('image', form.image.raw);
+    if (form.image && form.image.raw) {
+      // If it's a file (new image uploaded)
+      formData.append('image', form.image.raw)
+    } else if (form.image && form.image.url) {
+      // If it's just a URL (image not uploaded, just needs to be saved)
+      formData.append('image_url', form.image.url)
     }
     formData.append('product_code', form.product_code)
     formData.append('title', form.title)
@@ -162,7 +206,8 @@ const onSubmit = async () => {
     formData.append('volume', form.volume)
     formData.append('description', form.description)
     formData.append('gender', form.gender)
-    formData.append('fragrance_family', form.fragrance_family)
+    formData.append('category_id', form.category_id)
+    formData.append('status', form.status ? 1 : 0);
 
     await updateProduct(id, formData)
     ElMessage.success('Product updated successfully!')
@@ -174,15 +219,17 @@ const onSubmit = async () => {
     form.title = ''
     form.description = ''
     form.slug = ''
-    form.fragrance_family = ''
     form.price = ''
     form.volume = ''
     form.gender = ''
+    form.category_id = ''
+    form.status = 0
     navigateTo('/singleProduct')
   }
 }
 
 onMounted(() => {
   loadProduct()
+  fetchCategories()
 })
 </script>
