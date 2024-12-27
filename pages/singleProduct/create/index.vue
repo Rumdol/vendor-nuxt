@@ -1,6 +1,5 @@
 <template>
 
-  {{categoryData}}
   <el-form :model="form"
            ref="formRef"
            :rules="rules"

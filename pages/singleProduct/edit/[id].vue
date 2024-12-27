@@ -167,7 +167,6 @@ const loadProduct = async () => {
     form.volume = productData.value.volume || ''
     form.gender = productData.value.gender || ''
     form.category_id = productData.value.category_id || ''
-    console.log(form)
   } catch (error) {
     console.log('Failed to load product: ' + error)
   }
