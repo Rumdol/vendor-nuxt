@@ -110,7 +110,13 @@ onMounted(fetchCompound);
         <el-table-column prop="title" label="Title" width="300" />
         <el-table-column prop="price" label="Price" width="300" />
         <el-table-column prop="created_at" label="Date" width="200" />
-        <el-table-column prop="status" label="status" width="300" />
+        <<el-table-column prop="status" label="Status" width="300">
+        <template #default="{ row }">
+    <span :class="{'text-green-500': row.status === 1, 'text-red-500': row.status === 0}">
+      {{ row.status === 1 ? 'In Stock' : 'Out of Stock' }}
+    </span>
+        </template>
+      </el-table-column>
         <el-table-column  label=" " width="180" >
           <template #default="{ row }">
             <el-button @click="navigateTo(`/compoundProduct/edit/${row.id}`)">

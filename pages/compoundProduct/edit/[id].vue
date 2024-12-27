@@ -3,18 +3,18 @@
   <el-form :model="form"
            ref="formRef"
            :rules="rules"
-           label-width="auto" class="border border-gray:10 shadow p-4 w-[1200px] text-lg">
+           label-width="auto" class="border border-gray:10 shadow p-4 w-[1500px] text-lg">
     <h1 class="text-3xl text-center">Create Compound Product</h1>
     <div class="flex">
       <!-- Select Product -->
-      <el-form-item class="p-4" label="Select Compound Product">
+      <el-form-item class="p-4" label="Select Compound Product" prop="compound_products">
         <el-transfer
-          v-model="value"
+          v-model="selectedProducts"
           filterable
           :filter-method="filterMethod"
-          :titles="['Products', 'Compound Products']"
+          :titles="['Available Products', 'Compound Products']"
           filter-placeholder="Search..."
-          :data="data"
+          :data="transferData"
         />
       </el-form-item>
       <!-- Icon Upload -->
@@ -45,9 +45,11 @@
           <el-select v-model="form.gender" placeholder="please select your product gender">
             <el-option label="male" value="male" />
             <el-option label="female" value="female" />
+            <el-option label="female" value="prefer not to say" />
           </el-select>
         </el-form-item>
       </div>
+
       <div>
         <el-form-item label="Price" prop="price" class="w-[500px]">
           <el-input v-model.number="form.price" />
@@ -55,20 +57,19 @@
         <el-form-item label="Description" prop="description" class="w-[500px]">
           <el-input v-model="form.description" type="textarea" />
         </el-form-item>
-        <el-form-item label="In stock" prop="status" class="w-[500px]">
-          <el-switch v-model="form.status" />
-        </el-form-item>
+          <el-form-item label="In stock" prop="status" class="w-[500px]">
+            <el-switch v-model="form.status" :active-value="1" :inactive-value="0" />
+          </el-form-item>
       </div>
     </div>
     <el-form-item>
       <el-button type="primary" @click="submit">Submit</el-button>
-      <el-button @click="navigateTo('/compoundProduct')">Cancel</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script setup>
-import { ref} from 'vue'
+import { ref, onMounted, reactive} from 'vue'
 import { useProductStore } from '~/store/product.js'
 import { useCompoundStore } from '~/store/compoundproduct.js'
 import { useRoute } from 'vue-router'
@@ -81,7 +82,7 @@ const form = reactive({
   gender: '',
   price: '',
   description: '',
-  status: 1,
+  status: '',
   compound_products: []
 });
 
@@ -120,10 +121,10 @@ const rules = {
 const transferData = ref([]);
 const selectedProducts = ref([]);
 const productStore = useProductStore();
-const { getProduct } = productStore;
+const { getProduct} = productStore;
 const compoundStore = useCompoundStore();
 const { updateCompound, showCompound } = compoundStore;
-const route = useRoute;
+const route = useRoute();
 const formRef = ref(null);
 const Slug = (title) => {
   return title
@@ -136,11 +137,9 @@ const Slug = (title) => {
 };
 const compoundData = ref()
 const existingImage = ref(null)
-const loadCompound = async () => {
+const loadCompound = async (compound_id) => {
   try {
-    const id = route.params.id
-    compoundData.value = await showCompound(id)
-    console.log('data:', compoundData)
+    compoundData.value = await showCompound(compound_id)
     if (compoundData.value.image) {
       form.image = {
         name: compoundData.value.image.split('/').pop(),
@@ -148,7 +147,6 @@ const loadCompound = async () => {
         uid: compoundData.value.image,
       }
       existingImage.value = compoundData.value.image
-      console.log(form.image)
     } else {
       form.image = null
     }
@@ -158,46 +156,58 @@ const loadCompound = async () => {
     form.slug = compoundData.value.slug || ''
     form.price = compoundData.value.price || ''
     form.gender = compoundData.value.gender || ''
-    form.compound_products = compoundData.value.compound.map((product) => product.id);
-    transferData.value = compoundData.value.compound.map((product) => ({
+    // Set selected products
+    selectedProducts.value = compoundData.value.products.map((product) => product.id);
+
+    // Set transfer data with both selected and unselected products
+    transferData.value = compoundData.value.products.map((product) => ({
       label: product.title,
       key: product.id,
     }));
-    console.log(form)
   } catch (error) {
     console.log('Failed to load product: ' + error)
   }
 }
-console.log('Product show: ', compoundData)
 //fetch product to transfer to compound
-const fetchProduct = async (params={}) => {
-  try{
-    const response = await getProduct(params);
-    //map the products to the transfer data
-    transferData.value = response.data.map((products) => ({
-      label: products.title,
-      key: products.id,
-    }))
+const fetchProduct = async (params = {}) => {
+  try {
+    let currentPage = 1;
+    let products = [];
+    let totalPages;
 
-  }catch(error){
-    console.log('Failed to fetch Product', error);
+    do {
+      const response = await getProduct({ page: currentPage }); // Adjust this for your API call
+      products = products.concat(response.data);
+      totalPages = response.last_page;
+      currentPage++;
+    } while (currentPage <= totalPages);
+
+    transferData.value = products.map((product) => ({
+      label: product.title,
+      key: product.id,
+    }));
+  } catch (error) {
+    console.log('Failed to fetch Product', error)
   }
 }
 
 const submit = async () => {
   try{
+    const compound_id = route.params.id;
     //validate the form before process
     await formRef.value.validate();
-
     //prepare compound product data
     const compoundProducts = selectedProducts.value.map((id) => ({product_id: id}));
-
     const formData = new FormData();
 
     formData.append('product_code', form.product_code);
-    if (form.image) {
-      console.log(form.image.raw);
-      formData.append('image', form.image.raw);
+    // Include the existing image if a new one is not uploaded
+    if (form.image && form.image.raw) {
+      // If it's a file (new image uploaded)
+      formData.append('image', form.image.raw)
+    } else if (form.image && form.image.url) {
+      // If it's just a URL (image not uploaded, just needs to be saved)
+      formData.append('image_url', form.image.url)
     }
     formData.append('title', form.title);
     formData.append('slug', form.slug);
@@ -206,12 +216,25 @@ const submit = async () => {
     formData.append('gender', form.gender);
     formData.append('status', form.status ? 1 : 0);
     formData.append('compound_products', JSON.stringify(compoundProducts))
-    const { data } = await updateCompound(formData);
-    navigateTo('/compoundProduct')
+    await updateCompound(compound_id, formData);
+    ElMessage.success('Product updated successfully!')
   }catch(error){
     console.error('Compound Product creation failed', error);
+  }finally {
+    form.image = null
+    form.product_code = ''
+    form.title = ''
+    form.description = ''
+    form.slug = ''
+    form.price = ''
+    form.gender = ''
+    form.status = 0
+    selectedProducts.value = []
+    navigateTo('/compoundProduct')
   }
 }
+
+
 const handleUploadSuccess = (response, file, fileList) => {
   form.image = file;
 };
@@ -221,9 +244,13 @@ const handleRemove = () => {
 };
 
 const filterMethod = (query, item) => {
-  console.log({ query, item })
   return item.label.toLowerCase().includes(query.toLowerCase())
 }
 
+onMounted(() => {
+  const compound_id = route.params.id;
+  fetchProduct();
+  loadCompound(compound_id);  // Pass the correct ID here
+})
 </script>
 

@@ -40,9 +40,9 @@ export const useCompoundStore = defineStore('compound', () => {
     }
   }
 
-  const updateCompound = async (id, data) => {
+  const updateCompound = async (id, params) => {
     try{
-      const response = await compoundService.updateCompound(id, data)
+      const response = await compoundService.updateCompound(id, params)
       compound.value = response.data;
       return response.data
     }catch(error){

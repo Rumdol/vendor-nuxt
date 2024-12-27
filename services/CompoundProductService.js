@@ -27,10 +27,11 @@ class CompoundService extends BaseService {
   }
 
   async showCompound(id) {
+    console.log(id)
     return await this._get(`${this._prefix}/${id}`);
   }
   async updateCompound(id, payload={}) {
-    return await this._post(`${this._prefix}/update/${id}`, payload);
+    return await this._post(`${this._prefix}/${id}`, payload);
   }
   async deleteCompound(id) {
     return await this._delete(`${this._prefix}/${id}`);
