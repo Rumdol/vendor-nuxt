@@ -1,20 +1,19 @@
 import BaseService from './BaseService'
 
 let instance = null
-class ProductService extends BaseService {
+class CompoundService extends BaseService {
   constructor() {
-    super('product')
+    super('compound')
   }
 
   static getInstance() {
     if (!instance) {
-      instance = new ProductService()
+      instance = new CompoundService()
     }
     return instance
   }
 
-  async getProduct(payload = {}) {
-
+  async getCompound(payload = {}) {
 
     // Convert the filtered parameters to a query string
     const queryParams = new URLSearchParams(payload).toString()
@@ -23,19 +22,19 @@ class ProductService extends BaseService {
     return await this._get(`${this._prefix}?${queryParams}`, {})
   }
 
-  async createProduct(payload = {}) {
-    return await this._post(`${this._prefix}/create`, payload)
+  async createCompound(payload = {}) {
+    return await this._post(`${this._prefix}`, payload)
   }
 
-  async showProduct(id) {
+  async showCompound(id) {
     return await this._get(`${this._prefix}/${id}`);
   }
-  async updateProduct(id, payload={}) {
+  async updateCompound(id, payload={}) {
     return await this._post(`${this._prefix}/update/${id}`, payload);
   }
-  async deleteProduct(id) {
+  async deleteCompound(id) {
     return await this._delete(`${this._prefix}/${id}`);
   }
 }
 
-export default ProductService
+export default CompoundService

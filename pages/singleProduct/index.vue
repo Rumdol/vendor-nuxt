@@ -123,6 +123,7 @@ onMounted(fetchProduct);
       </el-table-column>
     </el-table>
   </div>
+
   <!-- Pagination -->
   <el-pagination
     v-model:currentPage="currentPage"

@@ -3,18 +3,18 @@
   <el-form :model="form"
            ref="formRef"
            :rules="rules"
-           label-width="auto" class="border border-gray:10 shadow p-4 w-[1500px] text-lg">
+           label-width="auto" class="border border-gray:10 shadow p-4 w-[1200px] text-lg">
     <h1 class="text-3xl text-center">Create Compound Product</h1>
     <div class="flex">
       <!-- Select Product -->
-      <el-form-item class="p-4" label="Select Compound Product" prop="compound_products">
+      <el-form-item class="p-4" label="Select Compound Product">
         <el-transfer
-          v-model="selectedProducts"
+          v-model="value"
           filterable
           :filter-method="filterMethod"
           :titles="['Products', 'Compound Products']"
           filter-placeholder="Search..."
-          :data="transferData"
+          :data="data"
         />
       </el-form-item>
       <!-- Icon Upload -->
@@ -48,7 +48,6 @@
           </el-select>
         </el-form-item>
       </div>
-
       <div>
         <el-form-item label="Price" prop="price" class="w-[500px]">
           <el-input v-model.number="form.price" />
@@ -72,6 +71,7 @@
 import { ref} from 'vue'
 import { useProductStore } from '~/store/product.js'
 import { useCompoundStore } from '~/store/compoundproduct.js'
+import { useRoute } from 'vue-router'
 
 const form = reactive({
   image: null,
@@ -122,7 +122,8 @@ const selectedProducts = ref([]);
 const productStore = useProductStore();
 const { getProduct } = productStore;
 const compoundStore = useCompoundStore();
-const { createCompound } = compoundStore;
+const { updateCompound, showCompound } = compoundStore;
+const route = useRoute;
 const formRef = ref(null);
 const Slug = (title) => {
   return title
@@ -133,7 +134,41 @@ const Slug = (title) => {
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 };
-
+const compoundData = ref()
+const existingImage = ref(null)
+const loadCompound = async () => {
+  try {
+    const id = route.params.id
+    compoundData.value = await showCompound(id)
+    console.log('data:', compoundData)
+    if (compoundData.value.image) {
+      form.image = {
+        name: compoundData.value.image.split('/').pop(),
+        url: compoundData.value.image,
+        uid: compoundData.value.image,
+      }
+      existingImage.value = compoundData.value.image
+      console.log(form.image)
+    } else {
+      form.image = null
+    }
+    form.product_code = compoundData.value.product_code || ''
+    form.title = compoundData.value.title || ''
+    form.description = compoundData.value.description || ''
+    form.slug = compoundData.value.slug || ''
+    form.price = compoundData.value.price || ''
+    form.gender = compoundData.value.gender || ''
+    form.compound_products = compoundData.value.compound.map((product) => product.id);
+    transferData.value = compoundData.value.compound.map((product) => ({
+      label: product.title,
+      key: product.id,
+    }));
+    console.log(form)
+  } catch (error) {
+    console.log('Failed to load product: ' + error)
+  }
+}
+console.log('Product show: ', compoundData)
 //fetch product to transfer to compound
 const fetchProduct = async (params={}) => {
   try{
@@ -148,8 +183,6 @@ const fetchProduct = async (params={}) => {
     console.log('Failed to fetch Product', error);
   }
 }
-console.log("transfer data: ", transferData.value);
-console.log("Product: ", fetchProduct());
 
 const submit = async () => {
   try{
@@ -157,7 +190,7 @@ const submit = async () => {
     await formRef.value.validate();
 
     //prepare compound product data
-    const compoundProducts = selectedProducts.value.map((id) => ({ product_id: id }));
+    const compoundProducts = selectedProducts.value.map((id) => ({product_id: id}));
 
     const formData = new FormData();
 
@@ -171,16 +204,16 @@ const submit = async () => {
     formData.append('price', form.price);
     formData.append('description', form.description);
     formData.append('gender', form.gender);
-    formData.append('status', form.status ? 1 : 0)
-    formData.append('compound_products', compoundProducts);
-    const { data } = await createCompound(formData);
+    formData.append('status', form.status ? 1 : 0);
+    formData.append('compound_products', JSON.stringify(compoundProducts))
+    const { data } = await updateCompound(formData);
     navigateTo('/compoundProduct')
   }catch(error){
     console.error('Compound Product creation failed', error);
   }
 }
 const handleUploadSuccess = (response, file, fileList) => {
-    form.image = file;
+  form.image = file;
 };
 
 const handleRemove = () => {
