@@ -26,12 +26,29 @@
               <i class="fa-solid fa-file-invoice mr-2 h-4 w-4 "></i> Promotions
             </router-link>
           </li>
-          <li>
-            <router-link to="/Order" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
-              <i class="fa-solid fa-cart-shopping mr-2 h-4 w-4"></i> Orders
-            </router-link>
+           <li>
+            <!-- Products with Submenu -->
+            <div class="group">
+              <div class="flex items-center justify-between p-2 rounded-md hover:bg-primary hover:bg-opacity-30 cursor-pointer">
+                <div class="flex items-center">
+                  <i class="fa-solid fa-cart-shopping mr-2 h-4 w-4"></i> Orders
+                </div>
+                <i class="fas fa-chevron-down group-hover:rotate-180 transition-transform"></i>
+              </div>
+              <ul class="hidden group-hover:block pl-6 mt-1 space-y-1">
+                <li>
+                  <router-link to="/RequestOrder" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 active:bg-opacity-100">
+                    Request Order
+                  </router-link>
+                </li>
+                <li>
+                  <router-link to="/HistoryOrder" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 active:bg-opacity-100">
+                    History Orders
+                  </router-link>
+                </li>
+              </ul>
+            </div>
           </li>
-
           <li class="setting">
             <router-link to="/Setting" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100 ">
               <i class="fa-solid fa-wrench mr-2 h-4 w-4"></i> Setting
