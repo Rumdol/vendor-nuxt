@@ -3,9 +3,9 @@
     <div class="total-list flex ">
       <ul class="flex gap-[50px] ml-[5px]">
         <li>
-          <TotalUser :total="dashboardStore.dashboard.total_users"/>
+          <TotalOrder :total="dashboardStore.dashboard.total_users"/>
         </li>
-        
+
         <li>
           <TotalProducts :total="dashboardStore.dashboard.total_products"/>
         </li>
