@@ -100,17 +100,17 @@ onMounted(fetchProduct);
   </div>
   <div class="border border-gray-200 mt-1.5 rounded">
     <el-table :data="products" >
-      <el-table-column prop="product_code" label="Product code" width="200" />
-      <el-table-column label="Image" width="100">
+      <el-table-column prop="product_code" label="Product code"  />
+      <el-table-column label="Image">
         <template #default="{ row }">
           <el-image :src="row.image" alt="Product Image" />
         </template>
       </el-table-column>
-      <el-table-column prop="title" label="Brand Name" width="300" />
-      <el-table-column prop="category_id" label="Category" width="300" />
-      <el-table-column prop="price" label="Price" width="200" />
-      <el-table-column prop="created_at" label="Date" width="200" />
-      <<el-table-column prop="status" label="Status" width="300">
+      <el-table-column prop="title" label="Brand Name" />
+      <el-table-column prop="category_id" label="Category" />
+      <el-table-column prop="price" label="Price" />
+      <el-table-column prop="created_at" label="Date" />
+      <<el-table-column prop="status" label="Status">
       <template #default="{ row }">
     <span :class="{'text-green-500': row.status === 1, 'text-red-500': row.status === 0}">
       {{ row.status === 1 ? 'In Stock' : 'Out of Stock' }}

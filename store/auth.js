@@ -60,11 +60,33 @@ export const useAuthStore = defineStore('auth', () => {
     cookies.remove('tokenType')
   }
 
+  const getProfile = async () => {
+    try {
+      const { data } = await authService.getProfile()
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Get Profile failed')
+      throw new Error(`Get Profile failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
+  const updateProfile = async (credentials) => {
+    try {
+      const { data } = await authService.updateProfile(credentials)
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Update Profile failed')
+      throw new Error(`Update Profile failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   return {
     user: computed(() => user.value),
     token,
     login,
     logout,
     getMe,
+    getProfile,
+    updateProfile,
   }
 })
