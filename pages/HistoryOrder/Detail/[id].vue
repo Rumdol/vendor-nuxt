@@ -17,53 +17,30 @@
     <div class="mb-6 border-b pb-6">
       <h2 class="text-xl font-bold text-gray-900 mb-4">Customer Detail</h2>
       <p class="text-lg text-gray-700">
-        Customer Name:
-        <span class="font-normal">{{ orderDetail.user.name }}</span>
+        Phone: <span class="font-normal">{{ orderDetail.phone }}</span>
       </p>
       <p class="text-lg text-gray-700">
-        Email: <span class="font-normal">{{ orderDetail.user.email }}</span>
+        Address: <span class="font-normal">{{ orderDetail.address }}</span>
       </p>
     </div>
 
-    <!-- Order Summary Table -->
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-4 text-left text-sm font-medium text-gray-900">
-              Product Name
-            </th>
-            <th class="px-6 py-4 text-left text-sm font-medium text-gray-900">
-              Quantity
-            </th>
-            <th class="px-6 py-4 text-left text-sm font-medium text-gray-900">
-              Unit Price
-            </th>
-            <th class="px-6 py-4 text-left text-sm font-medium text-gray-900">
-              Total Price
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
-          <tr v-for="item in orderDetail.products" :key="item.id">
-            <td class="px-6 py-4 text-gray-700">{{ item.title }}</td>
-            <td class="px-6 py-4 text-gray-700">{{ item.pivot.count || 0 }}</td>
-            <td class="px-6 py-4 text-gray-700">
-              ${{ item.price.toFixed(2) }}
-            </td>
-            <td class="px-6 py-4 text-gray-700">
-              ${{ (item.price * (item.pivot.count || 0)).toFixed(2) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Order Total -->
+    <!-- Order Summary -->
     <div class="mt-6 border-t pt-6 text-gray-700">
+      <p class="flex justify-between text-lg">
+        <span>Transaction Method:</span>
+        <span>{{ orderDetail.transaction_method }}</span>
+      </p>
+      <p class="flex justify-between text-lg">
+        <span>Transaction ID:</span>
+        <span>{{ orderDetail.transaction_id }}</span>
+      </p>
       <p class="flex justify-between text-lg">
         <span>Total Amount:</span>
         <span>${{ orderDetail.amount }}</span>
+      </p>
+      <p class="flex justify-between text-lg">
+        <span>Status:</span>
+        <span>{{ orderDetail.status }}</span>
       </p>
     </div>
   </div>
@@ -83,9 +60,12 @@ const orderDetail = ref(null)
 
 onMounted(async () => {
   try {
-    orderDetail.value = await orderStore.showOrder(orderId) // Fetch order details from the store
+    const response = await orderStore.showOrder(orderId)
+    // Assuming the API returns data in the structure you provided
+    orderDetail.value = response.data
   } catch (error) {
     console.error("Error fetching order details:", error)
+    ElMessage.error('Failed to fetch order details')
   }
 })
 </script>

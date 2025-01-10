@@ -5,7 +5,7 @@ definePageMeta({
 </script>
 
 <template>
-<div>Promotion</div>
+  <div>Compound Product Promotion</div>
 </template>
 
 <style scoped lang="scss">
