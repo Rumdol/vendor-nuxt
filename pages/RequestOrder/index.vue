@@ -48,7 +48,7 @@
                     <div class="flex gap-3">
                       <el-tooltip content="View Details" placement="top">
                         <el-button  @click="navigateTo(`/RequestOrder/Detail/${order.id}`)" class="action-btn">
-                          
+
                           <i class="fa-solid fa-eye"></i>
                         </el-button>
                       </el-tooltip>

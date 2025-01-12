@@ -24,6 +24,16 @@ class AuthService extends BaseService {
   async logout (req) {
     return await this._post(`${this._prefix}/logout`, req)
   }
+
+  //profile
+  async getProfile (req) {
+    return await this._get(`${this._prefix}/profile`, req)
+  }
+
+  //update profile
+  async updateProfile (req) {
+    return await this._post(`${this._prefix}/profile`, req)
+  }
 }
 
 export default AuthService
