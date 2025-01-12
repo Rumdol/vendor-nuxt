@@ -23,8 +23,8 @@
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="py-6 pl-8 pr-3 text-lg font-semibold text-left text-gray-900">Product ID</th>
-                  <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">User Name</th>
+                  <th class="py-6 pl-8 pr-3 text-lg font-semibold text-left text-gray-900">Order ID</th>
+                  <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Customer Name</th>
                   <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Address</th>
                   <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Date</th>
                   <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Product</th>
@@ -37,17 +37,29 @@
                   <td class="whitespace-nowrap pl-8 pr-3 text-base font-medium text-gray-900">
                     {{ order.id }}
                   </td>
-                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">{{ order.userName }}</td>
-                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">{{ order.address }}</td>
-                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">{{ order.date }}</td>
-                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">{{ order.productName }}</td>
+                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
+                    {{ order.user.name }}
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
+                    {{ order.address || "N/A" }}
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
+                    {{ order.created_at }}
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
+                    <ul>
+                      <li v-for="product in order.products" :key="product.id">
+                        {{ product.title }}
+                      </li>
+                    </ul>
+                  </td>
                   <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
                     <span :class="statusClass(order.status)">{{ order.status }}</span>
                   </td>
                   <td class="whitespace-nowrap px-4 py-5 text-base">
                     <div class="flex gap-3">
                       <el-tooltip content="View Details" placement="top">
-                        <el-button @click="navigateToDetail(order.id)" class="action-btn">
+                        <el-button @click="navigateTo(`/RequestOrder/Detail/${order.id}`)" class="action-btn">
                           <i class="fa-solid fa-eye"></i>
                         </el-button>
                       </el-tooltip>
@@ -59,86 +71,62 @@
           </div>
         </div>
       </div>
-      <!-- Pagination -->
-      <div class="flex items-center justify-between border-t border-gray-200 px-4 py-6 sm:px-6">
-        <el-pagination
-          :current-page="currentPage"
-          :page-size="pageSize"
-          :total="totalItems"
-          @current-change="handlePageChange"
-          layout="total, prev, pager, next, jumper"
-          class="text-base"
-        />
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
+import { useOrderStore } from '~/store/order'
 
-// Define the mock store data and methods
-const ordersStore = {
-  orders: [
-    { id: 1, userName: 'Moew Moew', address: 'Phnom Penh', date: '2024-12-25', productName: 'Perfume A', status: 'Done' },
-    { id: 2, userName: 'Moew Moew', address: 'Phnom Penh', date: '2024-12-25', productName: 'Perfume B', status: 'Reject' },
-    { id: 3, userName: 'Moew Moew', address: 'Phnom Penh', date: '2024-12-25', productName: 'Perfume C', status: 'Done' },
-  ],
-  fetchOrders(page, size) {
-    // This method simulates fetching orders but isn't connected to an API yet.
-    console.log(`Fetching orders for page ${page} with size ${size}`)
-  }
-}
-const router = useRouter()
-
-const currentPage = ref(1)
-const pageSize = ref(10)
-const totalItems = ref(ordersStore.orders.length)
+// Search query for filtering
 const searchQuery = ref('')
 
-const fetchOrders = () => {
-  ordersStore.fetchOrders(currentPage.value, pageSize.value)
+// Order store to fetch data
+const orderStore = useOrderStore()
+const orderList = ref([])
+
+// Fetch orders from the API
+const fetchOrders = async () => {
+  try {
+    const data = await orderStore.getOrder({})
+    orderList.value = data.data || [] // Assume the API returns orders in `data.data`
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+  }
 }
 
-onMounted(() => {
-  fetchOrders()
-})
-
-const paginatedOrders = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize.value
-  const endIndex = startIndex + pageSize.value
-  return ordersStore.orders.slice(startIndex, endIndex)
-})
-
+// Filter orders based on the search query
 const filteredOrders = computed(() => {
-  if (!searchQuery.value) return paginatedOrders.value
-  return paginatedOrders.value.filter(order =>
-    order.userName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    order.productName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    order.address.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    order.date.toLowerCase().includes(searchQuery.value.toLowerCase())
+  if (!searchQuery.value) return orderList.value
+  return orderList.value.filter((order) =>
+    order.user.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    (order.address || '').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    order.products.some(product =>
+      product.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
   )
 })
 
-const handlePageChange = (page) => {
-  currentPage.value = page
-  fetchOrders() // Simulate fetching orders when page changes
+// Navigate to order details
+const navigateTo = (route) => {
+  window.location.href = route
 }
 
-const navigateToDetail = (id) => {
-  router.push(`/HistoryOrder/Detail/${id}`)
-}
-
-// Method to conditionally add class for status styling
+// Add status-specific classes for styles
 const statusClass = (status) => {
-  if (status === 'Done') {
+  if (status === 'success') {
     return 'text-green-600'
-  } else if (status === 'Reject') {
+  } else if (status === 'pending') {
+    return 'text-yellow-500'
+  } else if (status === 'failed') {
     return 'text-red-600'
   }
   return 'text-gray-700'
 }
+
+// Fetch orders when the component is mounted
+onMounted(fetchOrders)
 </script>
 
 <style scoped>

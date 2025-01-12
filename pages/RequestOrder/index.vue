@@ -4,7 +4,6 @@
     <div class="pb-8 flex justify-between items-center">
       <h1 class="text-4xl font-bold text-gray-900">Request Orders</h1>
     </div>
-
     <!-- Search Bar Section -->
     <div class="pb-4">
       <input
@@ -14,7 +13,6 @@
         v-model="searchQuery"
       />
     </div>
-
     <!-- Table Section -->
     <div class="overflow-hidden bg-white shadow-lg rounded-2xl">
       <div class="flow-root">
@@ -31,7 +29,7 @@
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr
-                  v-for="order in orderList"
+                  v-for="order in filteredOrders"
                   :key="order.id"
                   class="hover:bg-gray-50"
                 >
@@ -46,17 +44,19 @@
                   </td>
                   <td class="whitespace-nowrap px-4 py-5 text-base">
                     <div class="flex gap-3">
+                      <!-- View Details -->
                       <el-tooltip content="View Details" placement="top">
-                        <el-button  @click="navigateTo(`/RequestOrder/Detail/${order.id}`)" class="action-btn">
-
+                        <el-button @click="navigateTo(`/RequestOrder/Detail/${order.id}`)" class="action-btn">
                           <i class="fa-solid fa-eye"></i>
                         </el-button>
                       </el-tooltip>
+                      <!-- Approve -->
                       <el-tooltip content="Approve" placement="top">
                         <el-button type="success" @click="handleApprove(order.id)" class="action-btn">
                           <i class="fa-solid fa-check"></i>
                         </el-button>
                       </el-tooltip>
+                      <!-- Reject -->
                       <el-tooltip content="Reject" placement="top">
                         <el-button type="warning" @click="handleReject(order.id)" class="action-btn">
                           <i class="fa-solid fa-xmark"></i>
@@ -75,12 +75,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useOrderStore } from '~/store/order'
 
+const searchQuery = ref('') // Bind the search bar value
 const orderStore = useOrderStore()
 const orderList = ref([])
 
+// Fetch orders from the store
 const fetchOrders = async () => {
   try {
     const data = await orderStore.getOrder({})
@@ -90,5 +92,38 @@ const fetchOrders = async () => {
   }
 }
 
+// Filter orders based on search query
+const filteredOrders = computed(() =>
+  orderList.value.filter((order) =>
+    order.user.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+)
+
+// Navigate to the detail page
+const navigateTo = (route) => {
+  window.location.href = route
+}
+
+// Approve an order
+const handleApprove = async (id) => {
+  try {
+    await orderStore.approved(id)
+    alert(`Order ${id} approved successfully`)
+  } catch (error) {
+    console.error(`Failed to approve order ${id}:`, error)
+  }
+}
+
+// Reject an order
+const handleReject = async (id) => {
+  try {
+    await orderStore.reject(id)
+    alert(`Order ${id} rejected successfully`)
+  } catch (error) {
+    console.error(`Failed to reject order ${id}:`, error)
+  }
+}
+
+// Fetch orders when the component is mounted
 onMounted(fetchOrders)
 </script>
