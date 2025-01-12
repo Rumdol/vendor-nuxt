@@ -5,6 +5,16 @@
       <h1 class="text-4xl font-bold text-gray-900">History Orders</h1>
     </div>
 
+    <!-- Search Bar Section -->
+    <div class="pb-4">
+      <input
+        type="text"
+        placeholder="Search orders..."
+        class="w-80 px-4 py-2 border border-gray-300 rounded-lg"
+        v-model="searchQuery"
+      />
+    </div>
+
     <!-- Table Section -->
     <div class="overflow-hidden bg-white shadow-lg rounded-2xl">
       <div class="flow-root">
@@ -23,7 +33,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
-                <tr v-for="order in paginatedOrders" :key="order.id" class="hover:bg-gray-50">
+                <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-gray-50">
                   <td class="whitespace-nowrap pl-8 pr-3 text-base font-medium text-gray-900">
                     {{ order.id }}
                   </td>
@@ -80,12 +90,12 @@ const ordersStore = {
     console.log(`Fetching orders for page ${page} with size ${size}`)
   }
 }
-
 const router = useRouter()
 
 const currentPage = ref(1)
 const pageSize = ref(10)
 const totalItems = ref(ordersStore.orders.length)
+const searchQuery = ref('')
 
 const fetchOrders = () => {
   ordersStore.fetchOrders(currentPage.value, pageSize.value)
@@ -99,6 +109,16 @@ const paginatedOrders = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize.value
   const endIndex = startIndex + pageSize.value
   return ordersStore.orders.slice(startIndex, endIndex)
+})
+
+const filteredOrders = computed(() => {
+  if (!searchQuery.value) return paginatedOrders.value
+  return paginatedOrders.value.filter(order =>
+    order.userName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    order.productName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    order.address.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    order.date.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
 })
 
 const handlePageChange = (page) => {
