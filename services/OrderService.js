@@ -15,7 +15,6 @@ class OrderService extends BaseService {
 
   async getOrder(payload = {}) {
 
-
     // Convert the filtered parameters to a query string
     const queryParams = new URLSearchParams(payload).toString()
 
@@ -23,15 +22,26 @@ class OrderService extends BaseService {
     return await this._get(`${this._prefix}?${queryParams}`, {})
   }
 
+  async getHistoryOrder(payload = {}) {
+
+    // Convert the filtered parameters to a query string
+    const queryParams = new URLSearchParams(payload).toString()
+
+    // Make the API call with the query parameters
+    return await this._get(`${this._prefix}/history?${queryParams}`, {})
+  }
+  async showHistoryOrder(id) {
+    return await this._get(`${this._prefix}/history/${id}`);
+  }
   async showOrder(id) {
     return await this._get(`${this._prefix}/${id}`);
   }
 
   async approved(id) {
-    return await this._post(`${this._prefix}/update/${id}`);
+    return await this._post(`${this._prefix}/approve/${id}`);
   }
   async reject(id) {
-    return await this._post(`${this._prefix}/update/${id}`);
+    return await this._post(`${this._prefix}/reject/${id}`);
   }
 
 

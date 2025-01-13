@@ -16,6 +16,7 @@ export const useProductStore = defineStore('product', () => {
       throw new Error(`Get product failed: ${error.message || 'Unknown error'}`)
     }
   }
+
   const createProduct = async (params) => {
     try{
       const { data } = await productService.createProduct(params)
