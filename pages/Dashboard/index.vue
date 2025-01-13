@@ -14,8 +14,8 @@
       </ul>
     </div>
     <div class="flex gap-3">
-      <TotalSaleCharts v-if="dashboardStore.dashboard.revenue_per_month" :revenue="dashboardStore.dashboard.revenue_per_month"/>
-      <TotalTopPrduct v-if="dashboardStore.dashboard.top_products" :data="dashboardStore.dashboard.top_products"/>
+      <TotalSaleCharts v-if="dashboardStore.dashboard.order_chart" :order="dashboardStore.dashboard.order_chart"/>
+      <TotalTopProduct v-if="dashboardStore.dashboard.top_product" :data="dashboardStore.dashboard.top_product"/>
     </div>
   </div>
 </template>

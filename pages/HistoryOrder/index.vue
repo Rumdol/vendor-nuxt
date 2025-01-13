@@ -12,6 +12,7 @@
         placeholder="Search orders..."
         class="w-80 px-4 py-2 border border-gray-300 rounded-lg"
         v-model="searchQuery"
+        @input = "handleSearch"
       />
     </div>
 
@@ -25,15 +26,15 @@
                 <tr>
                   <th class="py-6 pl-8 pr-3 text-lg font-semibold text-left text-gray-900">Order ID</th>
                   <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Customer Name</th>
-                  <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Address</th>
+                  <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Phone</th>
                   <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Date</th>
-                  <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Product</th>
+                  <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Price</th>
                   <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Status</th>
                   <th class="px-4 py-6 text-lg font-semibold text-left text-gray-900">Action</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
-                <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-gray-50">
+                <tr v-for="order in orderList" :key="order.id" class="hover:bg-gray-50">
                   <td class="whitespace-nowrap pl-8 pr-3 text-base font-medium text-gray-900">
                     {{ order.id }}
                   </td>
@@ -41,17 +42,13 @@
                     {{ order.user.name }}
                   </td>
                   <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
-                    {{ order.address || "N/A" }}
+                    {{ order.phone }}
                   </td>
                   <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
                     {{ order.created_at }}
                   </td>
                   <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
-                    <ul>
-                      <li v-for="product in order.products" :key="product.id">
-                        {{ product.title }}
-                      </li>
-                    </ul>
+                    {{ order.amount }}
                   </td>
                   <td class="whitespace-nowrap px-4 py-5 text-base text-gray-700">
                     <span :class="statusClass(order.status)">{{ order.status }}</span>
@@ -59,7 +56,7 @@
                   <td class="whitespace-nowrap px-4 py-5 text-base">
                     <div class="flex gap-3">
                       <el-tooltip content="View Details" placement="top">
-                        <el-button @click="navigateTo(`/RequestOrder/Detail/${order.id}`)" class="action-btn">
+                        <el-button @click="navigateTo(`/HistoryOrder/Detail/${order.id}`)" class="action-btn">
                           <i class="fa-solid fa-eye"></i>
                         </el-button>
                       </el-tooltip>
@@ -72,61 +69,95 @@
         </div>
       </div>
     </div>
+    <!-- Pagination Section -->
+    <div class="flex justify-between items-center p-4">
+      <!-- Previous Button -->
+      <button
+        class="px-4 py-2 text-primary border border-primary rounded-md"
+        :disabled="currentPage === 1"
+        @click="previousPage"
+      >
+        Previous
+      </button>
+
+      <!-- Page Numbers -->
+      <div class="flex gap-2">
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          class="px-4 py-2 rounded-md"
+          :class="{'bg-primary text-white': currentPage === page, 'bg-gray-200': currentPage !== page}"
+        >
+          {{ page }}
+        </button>
+      </div>
+
+      <!-- Next Button -->
+      <button
+        class="px-4 py-2 text-primary border border-primary rounded-md"
+        :disabled="currentPage === totalPages"
+        @click="nextPage"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useOrderStore } from '~/store/order'
-
-// Search query for filtering
-const searchQuery = ref('')
+import { useDebounce } from '~/composables/useDebounce.js'
 
 // Order store to fetch data
 const orderStore = useOrderStore()
+const searchQuery = ref('')
+const { getHistoryOrder } = orderStore
 const orderList = ref([])
+const currentPage = ref(1) // Current page for pagination
+const itemsPerPage = ref(10) // Number of items per page
+const totalPages = ref(1) // Total pages, default to 1
+const totalItems = ref(0) // Total items, fetched from the API
+const { debounce } = useDebounce()
 
 // Fetch orders from the API
-const fetchOrders = async () => {
+const fetchHistoryOrders = async () => {
   try {
-    const data = await orderStore.getOrder({})
+    const params = {
+      page: currentPage.value,
+      per_page: itemsPerPage.value,
+      search: searchQuery.value, // Include search query if available
+    }
+    const data = await getHistoryOrder(params)
     orderList.value = data.data || [] // Assume the API returns orders in `data.data`
+    totalItems.value = data.total || 0
+    totalPages.value = data.last_page || 0
   } catch (error) {
     console.error('Error fetching orders:', error)
   }
 }
+// Handle search (debounced)
+const searchHandler = debounce(async () => {
+  currentPage.value = 1 // Reset to the first page on search
+  await fetchHistoryOrders()
+}, 500)
 
-// Filter orders based on the search query
-const filteredOrders = computed(() => {
-  if (!searchQuery.value) return orderList.value
-  return orderList.value.filter((order) =>
-    order.user.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    (order.address || '').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    order.products.some(product =>
-      product.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  )
-})
-
-// Navigate to order details
-const navigateTo = (route) => {
-  window.location.href = route
+const handleSearch = async () => {
+  await searchHandler()
 }
-
 // Add status-specific classes for styles
 const statusClass = (status) => {
   if (status === 'success') {
     return 'text-green-600'
   } else if (status === 'pending') {
     return 'text-yellow-500'
-  } else if (status === 'failed') {
+  } else if (status === 'cancelled') {
     return 'text-red-600'
   }
   return 'text-gray-700'
 }
-
 // Fetch orders when the component is mounted
-onMounted(fetchOrders)
+onMounted(fetchHistoryOrders)
 </script>
 
 <style scoped>
