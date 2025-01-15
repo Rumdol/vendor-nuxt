@@ -10,7 +10,9 @@ const searchTerm = ref('');
 const itemsPage = ref(5);
 const compoundStore = useCompoundStore();
 const { getCompound, deleteCompound } = compoundStore;
-
+definePageMeta({
+  middleware: ['authenticated'],
+})
 //for search debounce
 const { debounce } = useDebounce()
 

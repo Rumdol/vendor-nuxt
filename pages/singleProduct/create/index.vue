@@ -64,12 +64,14 @@
     <el-form-item label="Volume" prop="volume">
       <el-input v-model.number="form.volume" />
     </el-form-item>
-
     <el-form-item label="Description" prop="description">
       <el-input v-model="form.description" type="textarea" />
     </el-form-item>
-    <el-form-item label="In stock" prop="status">
-      <el-switch v-model="form.status" />
+    <el-form-item label="Status" prop="status">
+      <el-radio-group v-model="form.status">
+        <el-radio :label="1">In Stock</el-radio>
+        <el-radio :label="0">Out of Stock</el-radio>
+      </el-radio-group>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="onSubmit">Create</el-button>
@@ -79,11 +81,13 @@
 </template>
 
 <script setup>
-import { ref, reactive} from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useProductStore} from '~/store/product.js'
 import { useCategoryStore } from '~/store/category.js'
 import { useTagStore} from '~/store/tag.js'
-
+definePageMeta({
+  middleware: ['authenticated'],
+})
 const form = reactive({
   image: null,
   product_code: '',
@@ -166,7 +170,7 @@ const fetchTag = async () => {
     const response = await getTag()
     console.log('Fetched special categories:', response)
 
-    tagData.value = response.data?.map((item) => ({
+    tagData.value = response.map((item) => ({
       id: item.id,
       name: item.name,
     }))
@@ -205,6 +209,7 @@ const createNewProduct = async () => {
     formData.append('description', form.description);
     formData.append('gender', form.gender);
     formData.append('category_id', form.category);
+    formData.append('tag_id', form.tag_id);
     formData.append('status', form.status);
 
     const { data } = await createProduct(formData);
@@ -233,5 +238,8 @@ const onSubmit = () => {
   });
 }
 
-onMounted(fetchCategories)
+onMounted(() => {
+  fetchCategories()
+  fetchTag()
+})
 </script>

@@ -70,7 +70,9 @@ import { reactive, ref, onMounted } from 'vue'
 import { useProductStore } from '~/store/product.js'
 import { useDiscountStore } from '~/store/promotion.js'
 import { useRoute } from 'vue-router'
-
+definePageMeta({
+  middleware: ['authenticated'],
+})
 const route = useRoute()
 
 const form = reactive({
