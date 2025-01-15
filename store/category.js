@@ -12,7 +12,6 @@ export const useCategoryStore = defineStore('category', () => {
       const { data } = await categoryService.getCategory(params)
       const categories = data || {};
       category.value = categories
-      console.log('category:',categories)
       return categories
     } catch (error) {
       ElMessage.error(error.message || 'Get category failed')

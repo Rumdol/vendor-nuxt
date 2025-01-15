@@ -28,9 +28,6 @@
             show-password
           ></el-input>
         </el-form-item>
-        <div class="flex justify-between items-center mb-4">
-          <el-checkbox v-model="loginForm.rememberMe">Remember Me</el-checkbox>
-        </div>
         <el-form-item>
           <el-button type="primary" class="button w-full" @click="handleLogin"
           >Login
