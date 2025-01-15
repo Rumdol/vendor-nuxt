@@ -110,15 +110,11 @@ const fetchCategories = async () => {
       search: searchTerm.value,
     })
 
-    console.log('response',response);
-
     const categoriesData = response.data?.map((item) => ({
       id: item.id,
       name: item.name,
     })) || [];
-
     categoryData.value = categoriesData;
-    console.log('Categories (id and name only):', categoryData.value);
   } catch (error) {
     console.log('Failed to fetch categories', error)
     ElMessage('Failed the fetch category', error)
@@ -222,6 +218,7 @@ const onSubmit = async () => {
     form.volume = ''
     form.gender = ''
     form.category_id = ''
+    form.special_category = ''
     form.status = 0
     navigateTo('/singleProduct')
   }

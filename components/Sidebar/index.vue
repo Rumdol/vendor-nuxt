@@ -17,6 +17,11 @@
             </router-link>
           </li>
           <li>
+            <router-link to="/Promotion" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 hover:text-opacity-30 active:bg-opacity-100">
+              <i class="fa-solid fa-tag mr-2 h-4 w-4"></i> Promotion
+            </router-link>
+          </li>
+          <li>
             <!-- Products with Submenu -->
             <div class="group">
               <div class="flex items-center justify-between p-2 rounded-md hover:bg-primary hover:bg-opacity-30 cursor-pointer">
@@ -38,28 +43,6 @@
                 </li>
               </ul>
             </div>
-            <!-- Promotion with Submenu -->
-            <div class="group">
-              <div class="flex items-center justify-between p-2 rounded-md hover:bg-primary hover:bg-opacity-30 cursor-pointer">
-                <div class="flex items-center">
-                  <i class="fa-solid fa-cart-shopping mr-2 h-4 w-4"></i> Promotions
-                </div>
-                <i class="fas fa-chevron-down group-hover:rotate-180 transition-transform"></i>
-              </div>
-              <ul class="hidden group-hover:block pl-6 mt-1 space-y-1">
-                <li>
-                  <router-link to="/SinglePromotions" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 active:bg-opacity-100">
-                    Single Product Promotion
-                  </router-link>
-                </li>
-                
-                <li>
-                  <router-link to="/CompoundPromotion" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 active:bg-opacity-100">
-                    Compund Product Promotion
-                  </router-link>
-                </li>
-              </ul>
-            </div>
             <!-- order with Submenu -->
             <div class="group">
               <div class="flex items-center justify-between p-2 rounded-md hover:bg-primary hover:bg-opacity-30 cursor-pointer">
@@ -74,7 +57,7 @@
                     Request Order
                   </router-link>
                 </li>
-                
+
                 <li>
                   <router-link to="/HistoryOrder" class="flex items-center p-2 rounded-md hover:bg-primary hover:bg-opacity-30 active:bg-opacity-100">
                     History Orders

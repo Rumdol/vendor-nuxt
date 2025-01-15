@@ -1,5 +1,4 @@
 <template>
-
   <el-form :model="form"
            ref="formRef"
            :rules="rules"
@@ -33,9 +32,24 @@
         :options="categoryData"
         :props="props"
         placeholder="Please select categories"
-        style="width: 240px"
         filterable
       />
+    </el-form-item>
+    <el-form-item label="Tag" prop="tag_id">
+      <el-select
+        v-model="form.tag_id"
+        :options="tagData"
+        placeholder="Please select tag"
+        filterable
+        :props="props"
+      >
+        <el-option
+          v-for="item in tagData"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        />
+      </el-select>
     </el-form-item>
     <el-form-item label="Gender" prop="gender">
       <el-select v-model="form.gender" placeholder="please select your product gender">
@@ -65,9 +79,10 @@
 </template>
 
 <script setup>
-import { ref} from 'vue'
+import { ref, reactive} from 'vue'
 import { useProductStore} from '~/store/product.js'
 import { useCategoryStore } from '~/store/category.js'
+import { useTagStore} from '~/store/tag.js'
 
 const form = reactive({
   image: null,
@@ -81,6 +96,7 @@ const form = reactive({
   description: '',
   category: '',
   status: 0,
+  tag_id: '',
 });
 
 const rules = {
@@ -117,22 +133,22 @@ const rules = {
 
 const categoryStore = useCategoryStore()
 const {getCategory } = categoryStore;
+const useTag = useTagStore();
+const { getTag } = useTag;
 const categoryData = ref([])
 const currentPage = ref(1)
-
+const tagData = ref([])
+const searchTerm = ref('')
 const props = {
   label: 'name', // Field to display in dropdown
   value: 'id',   // Field used for binding selected values
 }
-const selectedCategories = ref([])
-//Get category to show on the table
 const fetchCategories = async () => {
   try {
     const response = await getCategory({
       page: currentPage.value,
+      search: searchTerm.value,
     })
-
-    console.log('response',response);
 
     const categoriesData = response.data?.map((item) => ({
       id: item.id,
@@ -140,14 +156,25 @@ const fetchCategories = async () => {
     })) || [];
 
     categoryData.value = categoriesData;
-    console.log('Categories (id and name only):', categoryData.value);
   } catch (error) {
     console.log('Failed to fetch categories', error)
     ElMessage('Failed the fetch category', error)
   }
 }
+const fetchTag = async () => {
+  try {
+    const response = await getTag()
+    console.log('Fetched special categories:', response)
 
-console.log('fetchCategory', fetchCategories());
+    tagData.value = response.data?.map((item) => ({
+      id: item.id,
+      name: item.name,
+    }))
+  } catch (error) {
+    ElMessage.error('Failed to fetch special categories')
+    console.error('Error fetching special categories:', error)
+  }
+}
 const productStore = useProductStore()
 const { createProduct } = productStore
 
@@ -178,7 +205,7 @@ const createNewProduct = async () => {
     formData.append('description', form.description);
     formData.append('gender', form.gender);
     formData.append('category_id', form.category);
-    formData.append('status', form.status ? 1 : 0);
+    formData.append('status', form.status);
 
     const { data } = await createProduct(formData);
     navigateTo('/singleProduct')
@@ -206,4 +233,5 @@ const onSubmit = () => {
   });
 }
 
+onMounted(fetchCategories)
 </script>
