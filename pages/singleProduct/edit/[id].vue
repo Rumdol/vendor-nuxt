@@ -40,6 +40,22 @@
         filterable
       />
     </el-form-item>
+    <el-form-item label="Tag" prop="tag_id">
+      <el-select
+        v-model="form.tag_id"
+        :options="tagData"
+        placeholder="Please select tag"
+        filterable
+        :props="props"
+      >
+        <el-option
+          v-for="item in tagData"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        />
+      </el-select>
+    </el-form-item>
     <el-form-item label="Gender" prop="gender">
       <el-select
         v-model="form.gender"
@@ -59,8 +75,11 @@
     <el-form-item label="Description" prop="description">
       <el-input v-model="form.description" type="textarea" />
     </el-form-item>
-    <el-form-item label="In stock" prop="status">
-      <el-switch v-model="form.status" />
+    <el-form-item label="Status" prop="status">
+      <el-radio-group v-model="form.status">
+        <el-radio :label="1">In Stock</el-radio>
+        <el-radio :label="0">Out of Stock</el-radio>
+      </el-radio-group>
     </el-form-item>
 
     <el-form-item>
@@ -74,6 +93,7 @@ import { ref, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProductStore } from '~/store/product.js'
 import { useCategoryStore } from '~/store/category.js'
+import { useTagStore} from '~/store/tag.js'
 
 definePageMeta({
   middleware: ['authenticated'],
@@ -84,19 +104,22 @@ const form = reactive({
   product_code: '',
   title: '',
   slug: '',
-  fragrance_family: '',
   gender: '',
   price: '',
   volume: '',
   description: '',
   category_id: '',
-  status: 0,
+  status: '',
+  tag_id: '',
 });
 const categoryStore = useCategoryStore()
 const {getCategory } = categoryStore;
 const categoryData = ref([])
 const searchTerm = ref('')
 const currentPage = ref(1);
+const useTag = useTagStore();
+const { getTag } = useTag;
+const tagData = ref([])
 
 const props = {
   label: 'name', // Field to display in dropdown
@@ -120,7 +143,20 @@ const fetchCategories = async () => {
     ElMessage('Failed the fetch category', error)
   }
 }
+const fetchTag = async () => {
+  try {
+    const response = await getTag()
+    console.log('Fetched special categories:', response)
 
+    tagData.value = response.map((item) => ({
+      id: item.id,
+      name: item.name,
+    }))
+  } catch (error) {
+    ElMessage.error('Failed to fetch special categories')
+    console.error('Error fetching special categories:', error)
+  }
+}
 const productStore = useProductStore()
 const { showProduct, updateProduct } = productStore
 const productData = ref()
@@ -153,7 +189,11 @@ const loadProduct = async () => {
     const selectedCategory = categoryData.value.find(
       (category) => category.id === productData.value.category_id
     )
+    const selectedTag = tagData.value.find(
+      (tags) => tags.id === productData.value.tag_id
+    )
     form.category_id = selectedCategory ? selectedCategory.id : null
+    form.tag_id = selectedTag ? selectedTag.id : null
     form.product_code = productData.value.product_code || ''
     form.title = productData.value.title || ''
     form.description = productData.value.description || ''
@@ -163,6 +203,8 @@ const loadProduct = async () => {
     form.volume = productData.value.volume || ''
     form.gender = productData.value.gender || ''
     form.category_id = productData.value.category_id || ''
+    form.tag_id = productData.value.tag_id || ''
+    form.status = productData.value.status || ''
   } catch (error) {
     console.log('Failed to load product: ' + error)
   }
@@ -202,7 +244,8 @@ const onSubmit = async () => {
     formData.append('description', form.description)
     formData.append('gender', form.gender)
     formData.append('category_id', form.category_id)
-    formData.append('status', form.status ? 1 : 0);
+    formData.append('status', form.status);
+    formData.append('tag_id', form.tag_id);
 
     await updateProduct(id, formData)
     ElMessage.success('Product updated successfully!')
@@ -218,8 +261,8 @@ const onSubmit = async () => {
     form.volume = ''
     form.gender = ''
     form.category_id = ''
-    form.special_category = ''
-    form.status = 0
+    form.tag_id = ''
+    form.status = ''
     navigateTo('/singleProduct')
   }
 }
@@ -227,5 +270,6 @@ const onSubmit = async () => {
 onMounted(() => {
   loadProduct()
   fetchCategories()
+  fetchTag()
 })
 </script>

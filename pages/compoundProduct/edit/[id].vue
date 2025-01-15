@@ -73,7 +73,9 @@ import { ref, onMounted, reactive} from 'vue'
 import { useProductStore } from '~/store/product.js'
 import { useCompoundStore } from '~/store/compoundproduct.js'
 import { useRoute } from 'vue-router'
-
+definePageMeta({
+  middleware: ['authenticated'],
+})
 const form = reactive({
   image: null,
   product_code: '',

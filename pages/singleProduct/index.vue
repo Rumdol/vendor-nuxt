@@ -10,7 +10,9 @@ const searchTerm = ref('');
 const itemsPage = ref(5);
 const productStore = useProductStore();
 const { getProduct, deleteProduct } = productStore;
-
+definePageMeta({
+  middleware: ['authenticated'],
+})
 //for search debounce
 const { debounce } = useDebounce()
 

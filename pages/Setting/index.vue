@@ -80,6 +80,9 @@ onMounted(() => {
             <template v-if="isEditMode">
               <el-avatar :src="profile.image" size="large" />
               <el-form label-position="top" class="mt-4">
+                <el-form-item label="Image">
+                  <input type="file" @change="profileForm.image = $event.target.files[0]" />
+                </el-form-item>
                 <el-form-item label="Name">
                   <el-input v-model="profileForm.name" />
                 </el-form-item>
@@ -91,9 +94,6 @@ onMounted(() => {
                 </el-form-item>
                 <el-form-item label="Age">
                   <el-input v-model="profileForm.age" type="number" />
-                </el-form-item>
-                <el-form-item label="Image">
-                  <input type="file" @change="profileForm.image = $event.target.files[0]" />
                 </el-form-item>
                 <el-button type="success" @click="updateProfile">Save</el-button>
               </el-form>

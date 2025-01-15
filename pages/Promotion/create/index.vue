@@ -70,6 +70,10 @@ import { reactive, ref, onMounted } from 'vue'
 import { useProductStore } from '~/store/product.js'
 import { useDiscountStore} from '~/store/promotion.js'
 
+definePageMeta({
+  middleware: ['authenticated'],
+})
+
 const form = reactive({
   title: '',
   product_id: '',

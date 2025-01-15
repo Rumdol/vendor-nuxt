@@ -92,7 +92,9 @@
 import { ref } from 'vue'
 import { useProductStore } from '~/store/product.js'
 import { useCompoundStore } from '~/store/compoundproduct.js'
-
+definePageMeta({
+  middleware: ['authenticated'],
+})
 const form = reactive({
   image: null,
   product_code: '',

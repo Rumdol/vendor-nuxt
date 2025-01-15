@@ -91,7 +91,9 @@ import { ElMessage } from 'element-plus'
 const route = useRoute()
 const orderStore = useOrderStore()
 const orderDetail = ref(null) // Initialize as null to check for loaded data
-
+definePageMeta({
+  middleware: ['authenticated'],
+})
 const showOrder = async () => {
   try {
     const orderId = route.params.id
