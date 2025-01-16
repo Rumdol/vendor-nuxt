@@ -24,7 +24,7 @@ useSeoMeta({ title: 'Rumdul | Home' })
 
 definePageMeta(
   {
-    layout: 'default',
+    layout: 'auth',
   }
 )
 </script>

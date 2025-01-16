@@ -2,10 +2,10 @@
   <div class="layout flex h-screen overflow-y-auto">
     <Sidebar/>
     <div class="flex flex-col ">
-    <Header />
-    <main ref="mainContent" class="p-4">
-      <slot />
-    </main>
+      <Header />
+      <main ref="mainContent" class="p-4">
+        <slot />
+      </main>
     </div>
   </div>
 </template>
