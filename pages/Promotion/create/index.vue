@@ -46,7 +46,7 @@
       </el-form-item>
     </div>
     <el-form-item label="Discount" prop="discount">
-      <el-input v-model="form.discount" />
+      <el-input v-model.number="form.discount" />
     </el-form-item>
     <el-form-item label="Status" prop="status">
       <el-radio-group v-model="form.status">
@@ -110,7 +110,23 @@ const rules = {
     { required: true, message: 'Please select a product', trigger: 'change' },
   ],
   discount: [
-    { required: true, message: 'Please enter discount percent', trigger: 'change' },
+    {
+      required: true,
+      message: 'Please enter discount percent',
+      trigger: 'blur'
+    },
+    {
+      type: 'number',
+      message: 'Discount must be a valid number',
+      trigger: 'blur'
+    },
+    {
+      min: 1,
+      max: 100,
+      type: 'number',
+      message: 'Discount must be between 1 and 100',
+      trigger: 'blur'
+    }
   ],
   start_date: [
     { required: true, message: 'Please select starting date', trigger: 'change' },
@@ -123,6 +139,7 @@ const rules = {
     },
     {
       validator: (rule, value, callback) => {
+        // Check if end date is before start date
         if (value && form.start_date && new Date(value) < new Date(form.start_date)) {
           callback(new Error('End date cannot be before the start date'));
         } else {
@@ -195,7 +212,6 @@ const create = async () => {
     ElMessage.success('Promotion created successfully');
     navigateTo('/Promotion');
   } catch (error) {
-    console.error('Promotion creation failed', error);
     ElMessage.error('Failed to create promotion');
   }
 };

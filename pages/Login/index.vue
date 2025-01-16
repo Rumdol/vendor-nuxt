@@ -1,8 +1,4 @@
 <script setup>
-definePageMeta({
-  layout: 'auth',
-  middleware: ['redirect-if-authenticated']
-})
 </script>
 
 <template>

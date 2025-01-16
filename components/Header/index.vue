@@ -5,9 +5,8 @@ const email = 'yong@gmail.com';
 
 <template>
   <header class="">
-    <div class="top-bar h-16 items-center top-0 border-b bg-background/80 backdrop-blur flex justify-between">
+    <div class="top-bar h-16 items-center top-0 border-b bg-background/80 backdrop-blur flex justify-end pr-[100px]">
       <div class="flex items-center gap-5">
-        <input type="text" placeholder="Search..." class="search rounded-full border-2 border-gray-10 p-2" />
         <button class="flex h-9 w-9  items-center justify-center rounded-full border bg-amber-50">
           <i class="fa-solid fa-bell"></i>
         </button>

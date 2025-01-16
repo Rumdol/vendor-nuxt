@@ -112,7 +112,7 @@ onMounted(fetchProduct);
       <el-table-column prop="category_id" label="Category" />
       <el-table-column prop="price" label="Price" />
       <el-table-column prop="created_at" label="Date" />
-      <<el-table-column prop="status" label="Status">
+      <el-table-column prop="status" label="Status">
       <template #default="{ row }">
     <span :class="{'text-green-500': row.status === 1, 'text-red-500': row.status === 0}">
       {{ row.status === 1 ? 'In Stock' : 'Out of Stock' }}
