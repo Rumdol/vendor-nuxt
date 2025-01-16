@@ -19,10 +19,8 @@ export const useDiscountStore = defineStore('discount', () => {
   const createDiscount = async (params) => {
     try{
       const { data } = await discountService.createDiscount(params)
-      ElMessage.success(`Product created successfully!`)
       return data;
     }catch(error){
-      ElMessage.error(error.message || 'Failed to create product')
       throw new Error(`Create product failed: ${error.message || 'Unknown error'}`)
     }
   }
