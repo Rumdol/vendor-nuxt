@@ -12,7 +12,7 @@ export const useOrderStore = defineStore('product', () => {
       order.value = orders
       return orders
     } catch (error) {
-      ElMessage.error(error.message || 'Get product failed')
+      ElMessage.error('Get product failed')
       throw new Error(`Get product failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -24,7 +24,7 @@ export const useOrderStore = defineStore('product', () => {
       order.value = orders
       return orders
     } catch (error) {
-      ElMessage.error(error.message || 'Get product failed')
+      ElMessage.error('Get product failed')
       throw new Error(`Get product failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -34,7 +34,7 @@ export const useOrderStore = defineStore('product', () => {
       const response = await orderService.showHistoryOrder(params);
       return response.data;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch product')
+      ElMessage.error('Failed to fetch product')
       throw new Error(
         `Failed to fetch product: ${error.message || 'Unknown error'}`,
       )
@@ -46,7 +46,7 @@ export const useOrderStore = defineStore('product', () => {
       const response = await orderService.showOrder(params);
       return response.data;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch product')
+      ElMessage.error('Failed to fetch product')
       throw new Error(
         `Failed to fetch product: ${error.message || 'Unknown error'}`,
       )
@@ -69,7 +69,7 @@ export const useOrderStore = defineStore('product', () => {
       await orderService.reject(id);
       ElMessage.success('Cancelled order successfully')
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch product')
+      ElMessage.error('Failed to fetch product')
       throw new Error(
         `Failed to fetch product: ${error.message || 'Unknown error'}`,
       )
