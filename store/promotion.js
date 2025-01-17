@@ -11,7 +11,7 @@ export const useDiscountStore = defineStore('discount', () => {
       productDiscounts.value = data || {}
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Get product failed')
+      ElMessage.error('Get product failed')
       throw new Error(`Get product failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -41,9 +41,9 @@ export const useDiscountStore = defineStore('discount', () => {
       const response = await discountService.updateDiscount(id, params);
       return response.data;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch product')
+      ElMessage.error('Failed to fetch product')
       throw new Error(
-        `Failed to fetch product: ${error.message || 'Unknown error'}`,
+        `Failed to fetch product: 'Unknown error'}`,
       )
     }
   }

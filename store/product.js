@@ -12,7 +12,7 @@ export const useProductStore = defineStore('product', () => {
       product.value = products
       return products
     } catch (error) {
-      ElMessage.error(error.message || 'Get product failed')
+      ElMessage.error('Get product failed')
       throw new Error(`Get product failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -23,7 +23,7 @@ export const useProductStore = defineStore('product', () => {
       ElMessage.success(`Product created successfully!`)
       return data;
     }catch(error){
-      ElMessage.error(error.message || 'Failed to create product')
+      ElMessage.error('Failed to create product')
       throw new Error(`Create product failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -33,7 +33,7 @@ export const useProductStore = defineStore('product', () => {
       const response = await productService.showProduct(params);
       return response.data;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch product')
+      ElMessage.error('Failed to fetch product')
       throw new Error(
         `Failed to fetch product: ${error.message || 'Unknown error'}`,
       )
@@ -46,7 +46,7 @@ export const useProductStore = defineStore('product', () => {
       product.value = response.data;
       return response.data
     }catch(error){
-      ElMessage.error(error.message || 'Failed to update product')
+      ElMessage.error('Failed to update product')
       throw new Error(`Update product failed: ${error.message || 'Unknown error'}`)
     }
   }

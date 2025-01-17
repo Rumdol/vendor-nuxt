@@ -1,4 +1,11 @@
 <script setup>
+useSeoMeta({ title: 'Rumdul | Home' })
+
+definePageMeta(
+  {
+    layout: 'auth',
+  }
+)
 </script>
 
 <template>
@@ -34,12 +41,10 @@
   }
 }
 .logo{
-  display: flex;
   position: relative;
   z-index:2;
   width: 100%;
   height: 100%;
-  align-items: center;
   animation: login-page-animation 1s ease-in-out ;
 }
 .login-form{

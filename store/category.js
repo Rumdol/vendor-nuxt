@@ -14,7 +14,7 @@ export const useCategoryStore = defineStore('category', () => {
       category.value = categories
       return categories
     } catch (error) {
-      ElMessage.error(error.message || 'Get category failed')
+      ElMessage.error('Get category failed')
       throw new Error(`Get category failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -25,7 +25,7 @@ export const useCategoryStore = defineStore('category', () => {
       ElMessage.success('Category created successfully');
       return response.data;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to create category');
+      ElMessage.error('Failed to create category');
       throw new Error(`Create category failed: ${error.message || 'Unknown error'}`);
     }
   };
@@ -37,7 +37,7 @@ export const useCategoryStore = defineStore('category', () => {
       this.category = response //update the category state
         return response
     }catch(error){
-      ElMessage.error(error.message || 'Failed to search category');
+      ElMessage.error('Failed to search category');
       throw new Error(`Search category failed: ${error.message || 'Unknown error'}`);
     }
   }
@@ -52,7 +52,7 @@ export const useCategoryStore = defineStore('category', () => {
       ElMessage.success('Category updated successfully');
       return response;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to update category');
+      ElMessage.error('Failed to update category');
       throw new Error(`Update category failed: ${error.message || 'Unknown error'}`);
     }
   };
@@ -77,7 +77,7 @@ export const useCategoryStore = defineStore('category', () => {
       const response = await categoryService.showCategory(id);
       return response.data;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to show category');
+      ElMessage.error('Failed to show category');
       throw new Error(`Show category failed: ${error.message || 'Unknown error'}`);
     }
   }

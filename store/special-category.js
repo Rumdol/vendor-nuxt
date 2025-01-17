@@ -10,11 +10,10 @@ export const useSpecialStore = defineStore('tag', () => {
   const fetchSpecial = async () => {
     try {
       const response = await specialService.getSpecial()
-      console.log('API Response:', response)
       specialCategory.value = response?.data || [] // Safely handle null or undefined data
       return specialCategory.value
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch special categories')
+      ElMessage.error('Failed to fetch special categories')
       throw new Error(`Failed to fetch special categories: ${error.message || 'Unknown error'}`)
     }
   }
