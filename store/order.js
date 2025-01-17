@@ -58,7 +58,7 @@ export const useOrderStore = defineStore('product', () => {
       await orderService.approved(id);
       ElMessage.success('Confirm order successfully')
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch product')
+      ElMessage.error('Failed to fetch product')
       throw new Error(
         `Failed to fetch product: ${error.message || 'Unknown error'}`,
       )

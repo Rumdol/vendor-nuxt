@@ -61,6 +61,7 @@ onMounted(() => {
 
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
+    <button @click="navigateTo('/Dashboard')" class="bg-primary p-2 rounded w-[100px]">Back</button>
     <el-card shadow="hover" class="w-full max-w-4xl mx-auto">
       <div class="flex justify-between">
         <h1 class="text-2xl font-semibold text-gray-700 mb-4">Settings</h1>

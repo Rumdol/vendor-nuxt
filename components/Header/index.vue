@@ -1,6 +1,37 @@
 <script setup>
-const username = 'Yong';
-const email = 'yong@gmail.com';
+import { ref } from "vue";
+import { useRouter } from "nuxt/app";
+import { useAuthStore } from '~/store/auth.js';
+import { useCookies } from 'vue3-cookies'
+defineProps({
+  isLogin: Boolean,
+});
+const { cookies } = useCookies()
+const searchQuery = ref("");
+const router = useRouter();
+const authStore = useAuthStore();
+const user = ref(null);
+
+const search = () => {
+  if (searchQuery.value.trim()) {
+    router.push({
+      path: "/products",
+      query: { title: searchQuery.value },
+    });
+  }
+};
+
+onMounted(async () => {
+  const token = cookies.get('access_token')
+  if (!token) {
+    return
+  }
+  try {
+    user.value = await authStore.getProfile(); // Fetch user data or use cached data
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+  }
+});
 </script>
 
 <template>
@@ -12,13 +43,14 @@ const email = 'yong@gmail.com';
         </button>
         <!--Profile-->
         <div class="flex items-center gap-2">
-          <Button class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-amber-50">
-            <img src="@/assets/image/profile.jpg" alt="profile login" class="loginProfile w-full h-full ">
-          </Button>
-          <div class="flex flex-col items-start">
-            <h1><strong>{{username}}</strong></h1>
-            <span>{{email}}</span>
-          </div>
+            <router-link to="/Setting" v-if="user" class="flex flex-row items-center gap-3">
+              <img
+                :src="user.image"
+                alt="Profile Image"
+                class="w-10 h-10 rounded-full object-cover"
+              />
+              <span>{{ user.email}}</span>
+          </router-link>
         </div>
       </div>
     </div>

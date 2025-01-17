@@ -3,9 +3,8 @@
 </script>
 
 <template>
-  <div class="text-black">
-    <aside class="sidebar flex flex-col h-screen p-4 text-black">
-      <nav>
+  <div class="text-black sidebar">
+    <div class="flex flex-col p-4 text-black">
         <ul class="space-y-2">
           <li class="flex items-center gap-3">
             <!--Logo-->
@@ -77,8 +76,7 @@
             </router-link>
           </li>
         </ul>
-      </nav>
-    </aside>
+    </div>
   </div>
 </template>
 

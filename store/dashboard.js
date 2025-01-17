@@ -14,7 +14,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       const { data } = await dashboardService.getDashboard(params); // Call the service method
       dashboard.value = data || {}; // Store the response data in the state
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to get dashboard');
+      ElMessage.error('Failed to get dashboard');
       throw new Error(`Failed to get dashboard: ${error.message || 'Unknown error'}`);
     }
   };
