@@ -57,14 +57,12 @@
           />
           <p>Slug: {{ form.slug }}</p>
         </el-form-item>
-        <el-form-item label="Gender" prop="gender" class="w-[500px]">
-          <el-select
-            v-model="form.gender"
-            placeholder="please select your product gender"
-          >
-            <el-option label="male" value="male" />
-            <el-option label="female" value="female" />
-            <el-option label="female" value="prefer not to say" />
+        <el-form-item label="Gender" prop="gender">
+          <el-select v-model="form.gender" placeholder="please select your product gender">
+            <el-option label="Male" value="male" />
+            <el-option label="Female" value="female" />
+            <el-option label="Unisex" value="unisex" />
+
           </el-select>
         </el-form-item>
       </div>
@@ -76,8 +74,11 @@
         <el-form-item label="Description" prop="description" class="w-[500px]">
           <el-input v-model="form.description" type="textarea" />
         </el-form-item>
-        <el-form-item label="In stock" prop="status" class="w-[500px]">
-          <el-switch v-model="form.status" />
+        <el-form-item label="Status" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio :label="1">In Stock</el-radio>
+            <el-radio :label="0">Out of Stock</el-radio>
+          </el-radio-group>
         </el-form-item>
       </div>
     </div>

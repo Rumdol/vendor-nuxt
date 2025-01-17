@@ -57,12 +57,11 @@
       </el-select>
     </el-form-item>
     <el-form-item label="Gender" prop="gender">
-      <el-select
-        v-model="form.gender"
-        placeholder="please select your product gender"
-      >
-        <el-option label="male" value="male" />
-        <el-option label="female" value="female" />
+      <el-select v-model="form.gender" placeholder="please select your product gender">
+        <el-option label="Male" value="male" />
+        <el-option label="Female" value="female" />
+        <el-option label="Unisex" value="unisex" />
+
       </el-select>
     </el-form-item>
     <el-form-item label="Price" prop="price">
