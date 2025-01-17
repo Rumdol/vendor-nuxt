@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Login failed')
+      ElMessage.error('Login failed')
       throw new Error(`Login failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = data
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Login failed')
+      ElMessage.error('Login failed')
       throw new Error(`Login failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -65,7 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
       const { data } = await authService.getProfile()
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Get Profile failed')
+      ElMessage.error('Get Profile failed')
       throw new Error(`Get Profile failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -75,7 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
       const { data } = await authService.updateProfile(credentials)
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Update Profile failed')
+      ElMessage.error('Update Profile failed')
       throw new Error(`Update Profile failed: ${error.message || 'Unknown error'}`)
     }
   }

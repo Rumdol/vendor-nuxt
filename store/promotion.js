@@ -30,7 +30,7 @@ export const useDiscountStore = defineStore('discount', () => {
       const response = await discountService.showDiscount(id);
       return response;
     } catch (error) {
-      ElMessage.error(error.message || 'Failed to fetch product')
+      ElMessage.error('Failed to fetch product')
       throw new Error(
         `Failed to fetch product: ${error.message || 'Unknown error'}`,
       )
